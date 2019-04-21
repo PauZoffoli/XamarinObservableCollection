@@ -1,50 +1,68 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:EnlaceDeDatos"
              x:Class="EnlaceDeDatos.MainPage">
 
-   
     <ContentPage.Resources>
-        <local:Disco x:Key="disco1" Titulo="Let It Be" Banda="The Beatles" />
-        <local:Datos x:Key="datos1"/>
-        <Style x:Key="Titulos" TargetType="Label">
-            <Setter Property="FontSize">40</Setter>
-        </Style>
+        <local:Disco x:Key="disco1" 
+                     Titulo="Let it be"
+                     Banda="The Beatles" />
 
-        <Style x:Key="Cuerpo" TargetType="Label">
-            <Setter Property="FontSize">20</Setter>
-        </Style>
+        <local:Datos x:Key="datos1" />
 
+        <local:PrecioConverter x:Key="PrecioConverter" />
     </ContentPage.Resources>
-    <Grid >
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition></ColumnDefinition>
-        </Grid.ColumnDefinitions>
+
+    <Grid BindingContext="{Binding Source={StaticResource datos1}}">
         <Grid.RowDefinitions>
-            <RowDefinition></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StackLayout >
-            <Label Text="Cambio de disco" Style="{StaticResource Titulos}"/>
-            <Label Text="{Binding Titulo, Source={StaticResource disco1}, Mode=OneWay}" Style="{StaticResource Cuerpo}" />
-            <Label Text="Agregar Disco" Style="{StaticResource Titulos}"/>
-            <ListView ItemsSource="{Binding  Discos, Source={StaticResource datos1}, Mode=TwoWay}"
-                  SelectedItem="{ Binding DiscoSeleccionado, Mode=TwoWay}"
-                  x:Name="list1"/>
-        </StackLayout>
+        <ListView ItemsSource="{Binding Discos, Mode=TwoWay}"
+                  SelectedItem="{Binding DiscoSeleccionado, Mode=TwoWay}"
+                  HasUnevenRows="True"
+                  x:Name="list1">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
 
-        <StackLayout Grid.Row="2"  >
-            <!-- Place new controls here -->
+                            <Image Source="{Binding Portada}"
+                                   Margin="10"
+                                   WidthRequest="200"
+                                   HeightRequest="200" />
 
-            <Label Text="{Binding DiscoSeleccionado.Titulo, Mode=OneWay}"/>
+                            <StackLayout Grid.Column="1">
+                                <Label Text="{Binding Titulo}" FontSize="Large" />
+                                <Label Text="{Binding Banda}" />
+                                <Label Text="{Binding Genero}" />
+                            </StackLayout>
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <StackLayout Grid.Row="1">
+            <Label Text="{Binding DiscoSeleccionado.Titulo, Mode=OneWay}" />
             <Label Text="{Binding DiscoSeleccionado.Banda, Mode=OneWay}" />
             <Label Text="{Binding SelectedItem.Genero, Source={x:Reference list1}}" />
-            <Button Text="Agregar Disco" Clicked="OnClicked"/>
-            <Button Text="Cambiar Disco" Clicked="OnClickedChange"/>
+            <Label Text="{Binding DiscoSeleccionado.FechaLanzamiento, 
+                Mode=OneWay, StringFormat='{}{0:dd/MM/yyyy}'}" />
+            <Label Text="{Binding DiscoSeleccionado.Precio}"
+                   TextColor="{Binding DiscoSeleccionado.Precio, Converter={StaticResource PrecioConverter}}" />
+
+            <Button Text="Agregar disco"
+                    Clicked="OnClicked" Command="{Binding AgregarDiscoCommand}" />
         </StackLayout>
+        
+
     </Grid>
-    
 
 </ContentPage>
